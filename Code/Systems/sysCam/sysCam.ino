@@ -1,39 +1,76 @@
 #include <Camera.h>
 
 //==================================================================================================
-// Библиотеки
+// Configuration
 //==================================================================================================
 
-#define DEBUG true
+constexpr unsigned long CAMERA_READ_INTERVAL = 10;
+constexpr bool DEBUG = true;
 
+//==================================================================================================
+// Camera Objects
+//==================================================================================================
 
-// Объект камеры
 Camera cam_l;
 Camera cam_r;
 
-// Таймер считывания камеры
-unsigned long timer_cam = 0;
-
 //==================================================================================================
-// Инициализация
+// Timing
 //==================================================================================================
 
-void setup() {
-  camSetup();
-  Serial.begin(115200);
+unsigned long lastCameraRead = 0;
+
+//==================================================================================================
+// Helper Functions
+//==================================================================================================
+
+void processCamera(Camera* camera, const char* cameraName) {
+    int blob = camLineBlobFilter(camera);
+    int cell = camDefineCell(blob);
+
+    Serial.print(cameraName);
+    Serial.print(" Defined Cell: ");
+    Serial.println(cell);
 }
 
 //==================================================================================================
-// Главный цикл
+// Setup
+//==================================================================================================
+
+void setup() {
+    Serial.begin(115200);
+
+    camSetup();
+
+    if (DEBUG) {
+        Serial.println("Camera system initialized");
+    }
+}
+
+//==================================================================================================
+// Main Loop
 //==================================================================================================
 
 void loop() {
-  if (millis() - timer_cam >= 10) {
-    camRead();
-    //debugCameraL();
-    Serial.println("Defined Cell: " + String(camDefineCell(camLineBlobFilter(&cam_l))));
-    //debugCameraR();
-    
-    timer_cam = millis();
-  }
+    unsigned long now = millis();
+
+    if (now - lastCameraRead >= CAMERA_READ_INTERVAL) {
+
+        // Read all cameras
+        camRead();
+
+        // Process left camera
+        processCamera(&cam_l, "LEFT");
+
+        // Process right camera
+        processCamera(&cam_r, "RIGHT");
+
+        // Optional debugging
+        if (DEBUG) {
+            // debugCameraL();
+            // debugCameraR();
+        }
+
+        lastCameraRead = now;
+    }
 }
