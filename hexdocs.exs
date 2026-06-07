@@ -1,11 +1,11 @@
 def project do
   [
-    app: :my_app,
+    app: :my-app,
     version: "0.1.0-dev",
     deps: deps(),
 
     # Docs
-    name: "MyApp",
+    name: "Elora_bot",
     source_url: "https://github.com/auraecosystem/Elora_robot",
     homepage_url: "http://Elora_robot.pm",
     docs: &docs/0
