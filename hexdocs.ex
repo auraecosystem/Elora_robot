@@ -1,6 +1,6 @@
 def project do
   [
-    app: :my-app,
+    app: :myapp,
     version: "0.1.0-dev",
     deps: deps(),
 
